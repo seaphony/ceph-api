@@ -1,0 +1,97 @@
+# VM image - Ubuntu
+images:
+- location: "https://cloud-images.ubuntu.com/releases/23.10/release-20240125/ubuntu-23.10-server-cloudimg-amd64.img"
+  arch: "x86_64"
+  digest: "sha256:a7700ca87b691246cf57812c63f64a8ab0d6702c00f04c8f6efd97513bab5d59"
+- location: "https://cloud-images.ubuntu.com/releases/23.10/release-20240125/ubuntu-23.10-server-cloudimg-arm64.img"
+  arch: "aarch64"
+  digest: "sha256:1072e90dd339fd7ba1e82b6c1c3b03183287ca4a6da52c04eaeb0e5653a59bc7"
+# Fallback to the latest release image.
+# Hint: run `limactl prune` to invalidate the cache
+- location: "https://cloud-images.ubuntu.com/releases/23.10/release/ubuntu-23.10-server-cloudimg-amd64.img"
+  arch: "x86_64"
+- location: "https://cloud-images.ubuntu.com/releases/23.10/release/ubuntu-23.10-server-cloudimg-arm64.img"
+  arch: "aarch64"
+
+# VM disk size
+disk: 40GiB
+# CPUs
+# 🟢 Builtin default: min(4, host CPU cores)
+cpus: null
+# Memory size
+# 🟢 Builtin default: min("4GiB", half of host memory)
+memory: null
+
+mounts:
+# mount host home dir to guest VM as readOnly
+- location: "~"
+  mountPoint: "/home/guest"
+- location: "/tmp/lima"
+  writable: true
+
+containerd:
+  system: true
+
+# Provision scripts to configure Ceph dev environment
+provision:
+- mode: system
+  # Install and run MicroCeph
+  script: |
+    #!/bin/bash
+    set -eux -o pipefail
+    export DEBIAN_FRONTEND=noninteractive
+    sudo snap install microceph
+    sudo snap refresh --hold microceph
+    sudo microceph cluster bootstrap
+    sudo microceph disk add loop,4G,3
+    sudo microceph enable rgw
+    sudo apt-get update && apt-get install -y golang-go gcc g++ librbd-dev librados-dev linux-headers-generic ceph-common protobuf-compiler
+    sudo GO111MODULE=on GOBIN=/usr/local/bin go install github.com/bufbuild/buf/cmd/buf@v1.29.0 
+    sudo GO111MODULE=on GOBIN=/usr/local/bin go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+    sudo GO111MODULE=on GOBIN=/usr/local/bin go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+    sudo GO111MODULE=on GOBIN=/usr/local/bin go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.19.1
+    sudo GO111MODULE=on GOBIN=/usr/local/bin go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.19.1
+- mode: user
+  # Link git config from host machine
+  script: |
+    #!/bin/bash
+    mkdir -p {{.Home}}/projects/clyso/gitlab/ces-rest-api
+    ln -s /home/guest/.netrc {{.Home}}/.netrc
+    ln -s /home/guest/.gitconf* {{.Home}}
+    echo 'source <(nerdctl completion bash)' >>~/.bashrc
+    echo "alias docker='nerdctl -n=k8s.io'" >>~/.bashrc
+    echo 'complete -o default -F __start_nerdctl docker' >>~/.bashrc
+
+- mode: system
+  # Copy Microceph config to default /etc/ceph directory
+  script: |
+    #!/bin/bash
+    sudo mkdir /etc/ceph
+    sudo ln -s /var/snap/microceph/current/conf/* /etc/ceph
+    sudo chown -hR {{.User}} /etc/ceph
+    sudo chown -hR {{.User}} /var/snap/microceph/current/conf
+
+hostResolver:
+  enabled: true
+  ipv6: true
+
+
+# Copy files from the guest to the host. Copied after provisioning scripts have been completed.
+# copyToHost:
+# - guest: "/etc/myconfig.cfg"
+#   host: "{{.Dir}}/copied-from-guest/myconfig"
+# # deleteOnStop: false
+# # "guest" can include these template variables: {{.Home}}, {{.UID}}, and {{.User}}.
+# # "host" can include {{.Home}}, {{.Dir}}, {{.Name}}, {{.UID}}, and {{.User}}.
+# # "deleteOnStop" will delete the file from the host when the instance is stopped.
+
+
+# Extra environment variables that will be loaded into the VM at start up.
+# These variables are consumed by internal init scripts, and also added
+# to /etc/environment.
+# If you set any of "ftp_proxy", "http_proxy", "https_proxy", or "no_proxy", then
+# Lima will automatically set an uppercase variant to the same value as well.
+# 🟢 Builtin default: null
+# env:
+#   KEY: value
+

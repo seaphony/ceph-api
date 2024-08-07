@@ -1,0 +1,70 @@
+type: google.api.Service
+config_version: 3
+
+http:
+  rules:
+    - selector: ceph.Cluster.GetStatus
+      get: /api/cluster
+    - selector: ceph.Cluster.UpdateStatus
+      put: /api/cluster
+      body: "*"
+    - selector: ceph.Cluster.GetUsers
+      get: /api/cluster/user
+      response_body: "users"
+    - selector: ceph.Cluster.CreateUser
+      post: /api/cluster/user
+      body: "*"
+    - selector: ceph.Cluster.UpdateUser
+      put: /api/cluster/user
+      body: "*"
+    - selector: ceph.Cluster.ExportUser
+      post: /api/cluster/user/export
+      body: "*"
+      response_body: "data"
+    - selector: ceph.Cluster.DeleteUser
+      delete: /api/cluster/user/{user_entity}
+# User management
+    - selector: ceph.Users.ListUsers
+      get: /api/user
+      response_body: "users"
+    - selector: ceph.Users.CreateUser
+      post: /api/user
+      body: "*"
+    - selector: ceph.Users.UpdateUser
+      put: /api/user/{username}
+      body: "*"
+    - selector: ceph.Users.DeleteUser
+      delete: /api/user/{username}
+    - selector: ceph.Users.GetUser
+      get: /api/user/{username}
+    - selector: ceph.Users.UserChangePassword
+      post: /api/user/{username}/change_password
+      body: "*"
+# User Role management
+    - selector: ceph.Users.ListRoles
+      get: /api/role
+      response_body: "roles"
+    - selector: ceph.Users.CreateRole
+      post: /api/role
+      body: "*"
+    - selector: ceph.Users.UpdateRole
+      put: /api/role/{name}
+      body: "*"
+    - selector: ceph.Users.DeleteRole
+      delete: /api/role/{name}
+    - selector: ceph.Users.GetRole
+      get: /api/role/{name}
+    - selector: ceph.Users.CloneRole
+      get: /api/user/{name}/clone
+# Auth 
+    - selector: ceph.Auth.Login
+      post: /api/auth
+      body: "*"
+    - selector: ceph.Auth.Logout
+      post: /api/auth/logout
+      body: "*"
+    - selector: ceph.Auth.Check
+      post: /api/auth/check
+      body: "*"
+
+

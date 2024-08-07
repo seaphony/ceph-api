@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+option go_package = "github.com/seaphony/ceph-api/api/ceph;pb";
+
+package ceph;
+
+// import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+
+service Cluster {
+    // Get cluster status
+    rpc GetStatus (google.protobuf.Empty) returns (ClusterStatus);
+    // Update cluster status
+    rpc UpdateStatus (ClusterStatus) returns (google.protobuf.Empty);
+
+    rpc GetUsers (google.protobuf.Empty) returns (ClusterUsers);
+    rpc UpdateUser (UpdateClusterUserReq) returns (google.protobuf.Empty);
+    rpc CreateUser (CreateClusterUserReq) returns (google.protobuf.Empty);
+    rpc ExportUser (ExportClusterUserReq) returns (ExportClusterUserResp);
+    rpc DeleteUser (DeleteClusterUserReq) returns (google.protobuf.Empty);
+}
+
+message ClusterStatus{
+    enum Status {
+        INSTALLED=0;
+        POST_INSTALLED=1;
+    }
+    Status status = 1;
+}
+
+message ClusterUsers{
+    repeated ClusterUser users =1;
+}
+
+message ClusterUser {
+    // entity, e.g: "client.admin"
+    string entity = 1;
+    // user capabilities, e.g: {"mon": "allow r","osd":"allow rw pool=liverpool"}
+    map<string, string> caps = 2;
+    // keyring
+    string key = 3;
+}
+
+message UpdateClusterUserReq{
+    // user capabilities, e.g: {"mon": "allow r","osd":"allow rw pool=liverpool"}
+    map<string, string> capabilities = 1;
+    // entity, e.g: "client.admin"
+    string user_entity = 2 [json_name = "user_entity"];
+}
+
+message CreateClusterUserReq{
+    // user capabilities, e.g: {"mon": "allow r","osd":"allow rw pool=liverpool"}
+    map<string, string> capabilities = 1;
+    // entity, e.g: "client.admin"
+    string user_entity = 2 [json_name = "user_entity"];
+    // keyring file format - if import_data is set then other fields ignored
+    bytes import_data = 3 [json_name = "import_data"];
+}
+
+message ExportClusterUserReq{
+   repeated string entities = 1;
+}
+
+message DeleteClusterUserReq{
+    string user_entity = 1 [json_name = "user_entity"];
+}
+
+message ExportClusterUserResp{
+    // User key and capabilities in Ceph config file format
+    bytes data = 1;
+}

@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+option go_package = "github.com/seaphony/ceph-api/api/ceph;pb";
+
+package ceph;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+service Auth {
+    rpc Login(LoginReq) returns (LoginResp);
+    rpc Logout(google.protobuf.Empty) returns(google.protobuf.Empty);
+    rpc Check(TokenCheckReq)returns(TokenCheckResp);
+}
+
+message LoginReq{
+    string username=1;
+    string password=2;
+}
+
+message LoginResp{
+    string token =1;
+    string username =2;
+    bool pwd_update_required =3;
+    optional google.protobuf.Timestamp pwd_expiration_date =4;
+    bool sso =5;
+    map<string,google.protobuf.ListValue> permissions=6 ;
+}
+
+message TokenCheckReq{
+    string token =1;
+}
+
+message TokenCheckResp{
+    string username =1;
+    bool pwd_update_required =2;
+    optional google.protobuf.Timestamp pwd_expiration_date =3;
+    bool sso =4;
+    map<string,google.protobuf.ListValue> permissions=5 ;
+}
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Ceph management API";
+    //   version: "1.0";
+      contact: {
+        name: "Ceph API";
+        url: "https://github.com/seaphony/ceph-api";
+        // email: "none@example.com";
+      };
+      license: {
+        name: "GPL-3.0 license";
+        url: "https://github.com/seaphony/ceph-api/blob/main/LICENSE";
+      };
+    //   extensions: {
+    //     key: "x-something-something";
+    //     value {string_value: "yadda"}
+    //   }
+    };
+    // Overwriting host entry breaks tests, so this is not done here.
+    // external_docs: {
+    //   url: "https://github.com/grpc-ecosystem/grpc-gateway";
+    //   description: "More about gRPC-Gateway";
+    // }
+    schemes: HTTP;
+    schemes: HTTPS;
+    consumes: "application/json";
+    produces: "application/json";
+    security_definitions: {
+      security: {
+        key: "OAuth2";
+        value: {
+          type: TYPE_OAUTH2;
+          flow: FLOW_PASSWORD;
+          token_url: "http://localhost:9969/api/oauth/token";
+          scopes: {
+            scope: {
+                key: "openid";
+                value: "default scope"
+             }
+          }
+        }
+      }
+    }
+    security: {
+      security_requirement: {
+        key: "OAuth2";
+        value: {
+          scope: "openid";
+        }
+      }
+    }
+  };

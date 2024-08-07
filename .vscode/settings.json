@@ -1,0 +1,22 @@
+{
+  "go.toolsEnvVars": {
+    "CGO_ENABLED": "1"
+  },
+  "go.useCodeSnippetsOnFunctionSuggest": true,
+  "[go]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "golang.go",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+    },
+  },
+  // make sure the go language server is enabled
+  "go.useLanguageServer": true,
+  // configure gopls, the go language server
+  "gopls": {
+    "ui.semanticTokens": true,
+    "ui.completion.usePlaceholders": true
+  },
+  "go.formatTool": "goimports",
+  "go.coverOnSave": false,
+}

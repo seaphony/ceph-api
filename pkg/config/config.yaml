@@ -1,0 +1,31 @@
+log:
+  json: true
+  level: info # trace | debug | info | warn | error | fatal | panic
+metrics:
+  enabled: false # set true to serve prometheus metrics on :{api.httpPort}/metrics
+trace:
+  enabled: false
+  insecure: false # set true to use http schema instead of https
+  endpoint: "" # exporter endpoint (ex Jaeger)
+api:
+  httpPort: 9969 # http and grpc APIs can be hosted on the same or different ports
+  grpcPort: 9969 # http and grpc APIs can be hosted on the same or different ports
+  secure: false # use tls. set 'true' to create self-signed sertificate.
+  grpcReflection: true # enable grpc server reflection https://github.com/grpc/grpc/blob/master/doc/server-reflection.md
+  serveDebug: false # serve go debug info on :{api.httpPort}/debug/pprof/
+  accessLog: true # log server api calls with caller ID
+radosUser: "admin"
+rados: # RADOS connection credentials
+  user: "admin" # required
+  userKeyring: "" # if no keyring provided then keyring and monHost from this config will be ignored and app will try to look up default config file in /etc/ceph directory
+  monHost: "" # if no monhost provided then keyring and monHost from this config will be ignored and app will try to look up default config file in /etc/ceph directory
+auth:
+  accessTokenLifespan: 1m
+  refreshTokenLifespan: 1h
+  clientID: ceph-api # OAuth 2.0 clientID
+  issuer: ceph-api # OAuth 2.0 issuer name
+app:
+  createAdmin: false
+  adminUsername: ""
+  adminPassword: ""
+  bcryptPwdCost: 10 # User password bcrypt cost. Min 4, default 10, greater value means more security and more CPU usage

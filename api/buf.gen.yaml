@@ -1,0 +1,21 @@
+version: v1
+plugins:
+  - plugin: go
+    out: gen/grpc/go
+    opt: paths=source_relative
+  - plugin: go-grpc
+    out: gen/grpc/go
+    opt:
+      - paths=source_relative
+      - require_unimplemented_servers=false
+  - name: grpc-gateway
+    out: gen/grpc/go
+    opt:
+      - paths=source_relative
+      - grpc_api_configuration=http.yaml
+  - name: openapiv2
+    out: openapi
+    opt:
+      - grpc_api_configuration=http.yaml
+      - allow_merge=true
+      - merge_file_name=ceph-api

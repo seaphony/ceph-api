@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+option go_package = "github.com/seaphony/ceph-api/api/ceph;pb";
+
+package ceph;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+
+
+service Users {
+    rpc ListUsers (google.protobuf.Empty) returns (UsersResp);
+    rpc GetUser (GetUserReq) returns (User);
+    rpc CreateUser (CreateUserReq) returns (google.protobuf.Empty);
+    rpc DeleteUser (GetUserReq) returns (google.protobuf.Empty);
+    rpc UpdateUser (CreateUserReq) returns (google.protobuf.Empty);
+    rpc UserChangePassword (UserChangePasswordReq) returns (google.protobuf.Empty);
+
+    rpc ListRoles (google.protobuf.Empty) returns (RolesResp);
+    rpc GetRole (GetRoleReq) returns (Role);
+    rpc CreateRole (Role) returns (google.protobuf.Empty);
+    rpc DeleteRole (GetRoleReq) returns (google.protobuf.Empty);
+    rpc UpdateRole (Role) returns (google.protobuf.Empty);
+    rpc CloneRole (CloneRoleReq) returns (google.protobuf.Empty);
+}
+
+message RolesResp{
+    repeated Role roles =1;
+}
+
+message Role {
+    string name =1;
+    optional string description=2;
+    map<string,google.protobuf.ListValue> scopes_permissions=3 [json_name = "scopes_permissions"];
+}
+
+message GetRoleReq{
+    string name =1;
+}
+
+message CloneRoleReq{
+    string name =1;
+    string new_name=2 [json_name="new_name"];
+}
+
+message UsersResp{
+    repeated User users =1;
+}
+
+message User {
+    optional string email =1;
+    bool enabled =2;
+    optional string name =3;
+    google.protobuf.Timestamp last_update =4;
+    optional google.protobuf.Timestamp pwd_expiration_date =5;
+    bool pwd_update_required =6;
+    repeated string roles=7;
+    string username=8;
+}
+
+message GetUserReq {
+    string username =1;
+}
+
+message CreateUserReq {
+    optional string email =1;
+    bool enabled =2;
+    optional string name =3;
+    string password =4;
+    optional google.protobuf.Timestamp pwd_expiration_date =5;
+    bool pwd_update_required =6;
+    repeated string roles=7;
+    string username=8;
+}
+
+message UserChangePasswordReq{
+    string username=1;
+    string old_password=2 [json_name="old_password"];
+    string new_password=3 [json_name="new_password"];
+}
