@@ -1,0 +1,20 @@
+{{- if .Values.config.metrics.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "ceph-api.fullname" . }}
+  labels:
+    {{- include "ceph-api.labels" . | nindent 4 }}
+    {{- if .Values.serviceMonitorLabels }}
+    {{- toYaml .Values.serviceMonitorLabels | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "ceph-api.selectorLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  endpoints:
+    - port: http
+{{- end }}

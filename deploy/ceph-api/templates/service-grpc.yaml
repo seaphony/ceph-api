@@ -1,0 +1,17 @@
+{{- if ne .Values.config.api.httpPort .Values.config.api.grpcPort }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ceph-api.fullname" . }}-grpc
+  labels:
+    {{- include "ceph-api.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.config.api.grpcPort }}
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+  selector:
+    {{- include "ceph-api.selectorLabels" . | nindent 4 }}
+{{- end}}

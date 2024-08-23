@@ -1,0 +1,8 @@
+apiVersion: v2
+name: ceph-api
+description: A Helm chart for Ceph API
+home: https://github.com/seaphony/ceph-api
+keywords: ["Ceph"]
+type: application
+version: 0.0.1
+appVersion: "0.0.1"
