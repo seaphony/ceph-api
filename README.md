@@ -98,6 +98,29 @@ There is alternative auth API under `/api/auth` path (see [open api](./api/opena
 
 There is Go client bindings for gRPC API: [go_api_client.go](./go_api_client.go). Grpcs clients for other languages can be generate from proto files.
 
+## Deploy
+
+Ceph-API Helm chart is located in [deploy/ceph-api/](./deploy/ceph-api/). Each release publishes [docker image](https://github.com/seaphony/ceph-api/pkgs/container/ceph-api) and chart to GitHub registry.
+Use the following command to install it from GitHub OCI registry:
+
+```shell
+helm install myrelease oci://ghcr.io/seaphony/ceph-api/charts/ceph-api --version 0.0.1
+```
+
+If you are managing Ceph with [Rook](https://github.com/rook/rook), you can use these helpers to obtain RADOS credentials ([yq](https://github.com/mikefarah/yq) and [jq](https://github.com/jqlang/jq) required):
+
+```shell
+# get monitor IP from Rook ConfigMap:
+export MONITOR=$(kubectl -n rook-ceph get cm rook-ceph-mon-endpoints -o yaml | yq .data.csi-cluster-config-json | tr -d "'" | jq '.[0].monitors.[0]' | tr -d '"')
+
+# get admin keyring from rook secret:
+export RADOS_KEYRING=$(kubectl -n rook-ceph get secret rook-ceph-mon  -o yaml | yq .data.ceph-secret | base64 --decode)
+
+# install ceph-api with Helm:
+helm install myrelease oci://ghcr.io/seaphony/ceph-api/charts/ceph-api --version 0.0.1 --set-json='secretConfig.app={"adminUsername":"admin","adminPassword":"password"}' --set config.app.createAdmin=true --set secretConfig.rados.userKeyring=$RADOS_KEYRING --set secretConfig.rados.monHost=$MONITOR
+```
+
+The script above will deploy Ceph API with user `admin` and password `password`.
  
 ## Test
 Along with unit test project contains e2e test to run against real Ceph cluster.
