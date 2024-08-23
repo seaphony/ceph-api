@@ -1,4 +1,11 @@
+[![Tests](https://github.com/seaphony/ceph-api/actions/workflows/test.yml/badge.svg)](https://github.com/seaphony/ceph-api/actions/workflows/test.yml)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/seaphony/ceph-api)
+[![GoDoc](https://godoc.org/github.com/seaphony/ceph-api?status.svg)](https://pkg.go.dev/github.com/seaphony/ceph-api?tab=doc)
+[![Go Report Card](https://goreportcard.com/badge/github.com/seaphony/ceph-api)](https://goreportcard.com/report/github.com/seaphony/ceph-api)
+
+
 # Ceph API
+![ceph-api.png](./docs/media/banner.png)
 
 Standalone Ceph-API service. Alternative to [Ceph mgr RESTful API](https://docs.ceph.com/en/latest/mgr/ceph_api/).
 Exposes REST and gRPC APIs to administrate Ceph cluster. 
@@ -21,7 +28,10 @@ In this way Ceph API could be deployed anywhere with access to Ceph `mon`.
     docker-compose up
     ```
     The command above starts Ceph cluster in a single [demo container](https://github.com/ceph/ceph-container/tree/main/src/demo) with (mgr,mon,osd,rgw daemons).
-    By default, it is using ARM image. For other platforms (amd64) please adjust `quay.io/ceph/demo` image tag in [`docker-compose.yaml`](./docker-compose.yaml) manually. At the moment of writing multiplatform image not existed.
+    By default, it is using **ARM** image. For other platforms (x86-64) please adjust `quay.io/ceph/demo` image tag in [`docker-compose.yaml`](./docker-compose.yaml). This can be done with `CEPH_DEMO_TAG` envar:
+    ```shell
+    CEPH_DEMO_TAG=latest docker-compose up
+    ```
 
     Ceph-API docker container starts with both REST and grpc APIs on port `:9969` and creates default admin account with both username `admin` and password `yoursecretpass`.
 

@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ceph-api.fullname" . }}
+  labels:
+    {{- include "ceph-api.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "ceph-api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "ceph-api.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "ceph-api.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.config.api.httpPort }}
+              protocol: TCP
+            {{- if ne .Values.config.api.httpPort .Values.config.api.grpcPort }}
+            - name: grpc
+              containerPort: {{ .Values.config.api.grpcPort }}
+              protocol: TCP
+            {{- end }}
+          command:
+            - "ceph-api"
+            - "-config"
+            - "/bin/config/config.yaml"
+            - "-config-override"
+            - "/bin/config/override.yaml"
+          volumeMounts:
+            - mountPath: /bin/config/config.yaml
+              name: config
+              subPath: config
+            - mountPath: /bin/config/override.yaml
+              name: secret
+              subPath: config
+          livenessProbe:
+            initialDelaySeconds: 3
+            periodSeconds: 20
+            tcpSocket:
+              port: http
+          readinessProbe:
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            tcpSocket:
+              port: http 
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - configMap:
+          name: {{ include "ceph-api.fullname" . }}
+        name: config
+      - secret:
+          secretName: {{ include "ceph-api.fullname" . }}
+        name: secret

@@ -63,8 +63,8 @@ func Test_ClusterUsers(t *testing.T) {
 		}
 	}
 	r.NotNil(created, "new user created")
-	r.Len(created.Caps, 1, "new user has correct capabilites")
-	r.EqualValues(created.Caps["mon"], "allow r", "new user has correct capabilites")
+	r.Len(created.Caps, 1, "new user has correct capabilities")
+	r.EqualValues(created.Caps["mon"], "allow r", "new user has correct capabilities")
 
 	exp, err := client.ExportUser(tstCtx, &pb.ExportClusterUserReq{Entities: []string{user}})
 	r.NoError(err, "new user can be exported")

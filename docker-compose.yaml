@@ -3,7 +3,7 @@ version: "3"
 services:
   ceph:
     privileged: true
-    image: quay.io/ceph/demo:main-985bb83-main-centos-arm64-stream8-aarch64 # for ARM
+    image: quay.io/ceph/demo:${CEPH_DEMO_TAG:-main-985bb83-main-centos-arm64-stream8-aarch64} # for ARM
     # image: quay.io/ceph/demo # alternative image not for ARM 
     command: demo
     environment:

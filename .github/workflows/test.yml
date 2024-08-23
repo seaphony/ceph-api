@@ -1,0 +1,22 @@
+name: E2E tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - "docs/**"
+      - "deploy/**"
+      -  "**.md"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: KengoTODA/actions-setup-docker-compose@v1
+        with:
+          version: '2.14.2'
+      - name: Test
+        run: CEPH_DEMO_TAG=latest docker-compose -f "docker-compose-test.yaml" up --build --exit-code-from api-test

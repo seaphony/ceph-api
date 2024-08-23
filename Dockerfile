@@ -8,6 +8,7 @@ ENV GIT_COMMIT=$GIT_COMMIT
 ENV GIT_TAG=$GIT_TAG
 # pacific, quincy, reef	
 ENV CEPH_RELEASE="reef" 
+ENV CPU_ARCH=$TARGETARCH
 
 RUN echo $TARGETARCH
 
@@ -30,32 +31,38 @@ COPY . .
 RUN CGO_ENABLED=1 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GO111MODULE=on \
     go build -ldflags="-X 'main.version=$GIT_TAG' -X 'main.commit=$GIT_COMMIT'" ./cmd/ceph-api
 
+# --== workaround for multi-arch build ==--
+# shared lib path contains system arch in its name: 
+# - ".../aarch64-linux-gnu/..." for arm64 
+# - ".../x64_86-linux-gnu/..." for amd64
+# docker builtin $TARGETARCH envar cannot be used because it returns arch in different format
+# and it is not possible to have any mapping in Dockfile.
+# So here we copy required libs with full paths into "dependencies" dir 
+# to COPY these libraries into target image on the next phase.
+RUN mkdir dependencies
+RUN cp -r --parents /usr/lib/*-linux-gnu/librbd.so* -t dependencies
+RUN cp -r --parents /usr/lib/*-linux-gnu/librados.so* -t dependencies
+RUN cp -r --parents /usr/lib/*-linux-gnu/ceph/libceph-common.so* -t dependencies
+RUN cp -r --parents /lib/*-linux-gnu/libfmt.so* -t dependencies
+RUN cp -r --parents /lib/*-linux-gnu/libboost_thread.so* -t dependencies
+RUN cp -r --parents /lib/*-linux-gnu/libboost_iostreams.so* -t dependencies
+RUN cp -r --parents /lib/*-linux-gnu/libblkid.so* -t dependencies
+RUN cp -r --parents /lib/*-linux-gnu/libudev.so* -t dependencies
+RUN cp -r --parents /lib/*-linux-gnu/libibverbs.so* -t dependencies
+RUN cp -r --parents /lib/*-linux-gnu/librdmacm.so* -t dependencies
+RUN cp -r --parents /lib/*-linux-gnu/libz.so* -t dependencies
+RUN cp -r --parents /lib/*-linux-gnu/libbz2.so* -t dependencies
+RUN cp -r --parents /lib/*-linux-gnu/liblzma.so* -t dependencies
+RUN cp -r --parents /lib/*-linux-gnu/libzstd.so* -t dependencies
+RUN cp -r --parents /lib/*-linux-gnu/libnl-route-3.so* -t dependencies
+RUN cp -r --parents /lib/*-linux-gnu/libnl-3.so* -t dependencies
+
+
 FROM gcr.io/distroless/cc-debian12
 
-# TODO: support multi-arch build
 # copy shared libraries
-COPY --from=builder /usr/lib/aarch64-linux-gnu/librbd.so* /usr/lib/aarch64-linux-gnu/
-# COPY --from=builder /usr/lib/x86_64-linux-gnu/librbd.so* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/aarch64-linux-gnu/librados.so* /usr/lib/aarch64-linux-gnu/
-# COPY --from=builder /usr/lib/x86_64-linux-gnu/librados.so* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/aarch64-linux-gnu/libceph.so* /usr/lib/aarch64-linux-gnu/
-# COPY --from=builder /usr/lib/x86_64-linux-gnu/libceph.so* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/aarch64-linux-gnu/ceph/libceph-common.so* /usr/lib/aarch64-linux-gnu/ceph/
-# COPY --from=builder /usr/lib/x86_64-linux-gnu/ceph/libceph-common.so* /usr/lib/x86_64-linux-gnu/ceph/
-COPY --from=builder /lib/aarch64-linux-gnu/libfmt.so* /lib/aarch64-linux-gnu/
-COPY --from=builder /lib/aarch64-linux-gnu/libboost_thread.so* /lib/aarch64-linux-gnu/
-COPY --from=builder /lib/aarch64-linux-gnu/libboost_iostreams.so* /lib/aarch64-linux-gnu/
-COPY --from=builder /lib/aarch64-linux-gnu/libblkid.so* /lib/aarch64-linux-gnu/
-COPY --from=builder /lib/aarch64-linux-gnu/libudev.so* /lib/aarch64-linux-gnu/
-COPY --from=builder /lib/aarch64-linux-gnu/libibverbs.so* /lib/aarch64-linux-gnu/
-COPY --from=builder /lib/aarch64-linux-gnu/librdmacm.so* /lib/aarch64-linux-gnu/
-COPY --from=builder /lib/aarch64-linux-gnu/libz.so* /lib/aarch64-linux-gnu/
-COPY --from=builder /lib/aarch64-linux-gnu/libbz2.so* /lib/aarch64-linux-gnu/
-COPY --from=builder /lib/aarch64-linux-gnu/liblzma.so* /lib/aarch64-linux-gnu/
-COPY --from=builder /lib/aarch64-linux-gnu/libzstd.so* /lib/aarch64-linux-gnu/
-COPY --from=builder /lib/aarch64-linux-gnu/libnl-route-3.so* /lib/aarch64-linux-gnu/
-COPY --from=builder /lib/aarch64-linux-gnu/libnl-3.so* /lib/aarch64-linux-gnu/
-# COPY --from=builder /lib/x86_64-linux-gnu/libfmt.so* /lib/x86_64-linux-gnu/
+COPY --from=builder /build/dependencies/usr/lib/ /usr/lib/
+COPY --from=builder /build/dependencies/lib/ /lib/
 
 # copy app bianry
 COPY --from=builder /build/ceph-api /bin/ceph-api
