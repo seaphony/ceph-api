@@ -20,6 +20,9 @@
       "name": "Cluster"
     },
     {
+      "name": "Host"
+    },
+    {
       "name": "Users"
     }
   ],
@@ -336,6 +339,36 @@
         ],
         "tags": [
           "Cluster"
+        ]
+      }
+    },
+    "/api/host/{name}": {
+      "get": {
+        "operationId": "Host_GetHost",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cephHostResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Host"
         ]
       }
     },
@@ -892,6 +925,17 @@
           "type": "string",
           "format": "byte",
           "title": "User key and capabilities in Ceph config file format"
+        }
+      }
+    },
+    "cephHostResp": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "info": {
+          "type": "string"
         }
       }
     },

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "github.com/seaphony/ceph-api/api/ceph;pb";
+
+package ceph;
+
+service Host {
+    rpc GetHost (GetHostReq) returns (HostResp);
+}
+
+message GetHostReq{
+    string name =2;
+}
+
+message HostResp{
+    string name =1;
+    string info =2;
+}

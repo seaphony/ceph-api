@@ -35,6 +35,10 @@ func GRPCGateway(ctx context.Context, conf Config, metricsHandler http.HandlerFu
 	if err != nil {
 		return nil, err
 	}
+	err = pb.RegisterHostHandlerFromEndpoint(ctx, mux, serverAddress, opts)
+	if err != nil {
+		return nil, err
+	}
 	err = pb.RegisterAuthHandlerFromEndpoint(ctx, mux, serverAddress, opts)
 	if err != nil {
 		return nil, err

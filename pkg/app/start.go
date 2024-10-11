@@ -80,8 +80,10 @@ func Start(ctx context.Context, conf config.Config, build config.Build) error {
 
 	server := util.NewServer()
 
+	hostAPI := api.NewHostsAPI()
+
 	authChecker := auth.AuthFunc(userSvc, authServer.Provider(), authServer.GetPublicKey)
-	grpcServer := api.NewGrpcServer(conf.Api, clusterAPI, usersAPI, authAPI, authChecker, tp, conf.Log)
+	grpcServer := api.NewGrpcServer(conf.Api, clusterAPI, usersAPI, authAPI, hostAPI, authChecker, tp, conf.Log)
 
 	var metricsHandler http.HandlerFunc
 	if conf.Metrics.Enabled {

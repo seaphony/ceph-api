@@ -66,5 +66,8 @@ http:
     - selector: ceph.Auth.Check
       post: /api/auth/check
       body: "*"
+# Host management
+    - selector: ceph.Host.GetHost
+      get: /api/host/{name}
 
 
