@@ -1,5 +1,5 @@
 package util
 
-func StrPtr(s string)*string{
+func StrPtr(s string) *string {
 	return &s
 }
