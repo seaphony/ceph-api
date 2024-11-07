@@ -1,0 +1,58 @@
+syntax = "proto3";  
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/seaphony/ceph-api/api/ceph;pb";
+
+package ceph;
+
+service CrushRule {
+  rpc CreateRule (CreateRuleRequest) returns (google.protobuf.Empty) {}
+  rpc DeleteRule (DeleteRuleRequest) returns (google.protobuf.Empty) {}
+  rpc GetRule (GetRuleRequest) returns (Rule) {}
+  rpc ListRules (google.protobuf.Empty) returns (ListRulesResponse) {}
+}
+
+enum PoolType {
+    replication = 0;
+    erasure = 1;
+}
+
+message Rule {
+    int64 rule_id = 1;       
+    string rule_name = 2;    
+    int64 ruleset = 3;       
+    int64 type = 4;          
+    int64 min_size = 5;     
+    int64 max_size = 6;      
+    repeated Step steps = 7; 
+}
+
+message Step {
+    map<string, string> entries = 1; 
+}
+
+// CREATE RULE
+message CreateRuleRequest {
+    optional string device_class = 1;
+    string failure_domain = 2;
+    string name = 3;
+    PoolType pool_type = 4;
+    optional string profile = 5;
+    optional string root = 6;
+}
+
+// DELETE RULE
+message DeleteRuleRequest {
+    string name = 1;
+}
+
+// GET RULE
+message GetRuleRequest {
+    string name = 1;
+}
+
+// LIST RULES
+message ListRulesResponse {
+    repeated Rule rules = 1;
+}
