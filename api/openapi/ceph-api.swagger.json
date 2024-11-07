@@ -20,6 +20,9 @@
       "name": "Cluster"
     },
     {
+      "name": "CrushRule"
+    },
+    {
       "name": "Users"
     }
   ],
@@ -339,6 +342,122 @@
         ]
       }
     },
+    "/api/crush_rule": {
+      "get": {
+        "operationId": "CrushRule_ListRules",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "$ref": "#/definitions/cephRule"
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "CrushRule"
+        ]
+      },
+      "post": {
+        "operationId": "CrushRule_CreateRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cephCreateRuleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CrushRule"
+        ]
+      }
+    },
+    "/api/crush_rule/{name}": {
+      "get": {
+        "operationId": "CrushRule_GetRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cephRule"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "CrushRule"
+        ]
+      },
+      "delete": {
+        "operationId": "CrushRule_DeleteRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "CrushRule"
+        ]
+      }
+    },
     "/api/role": {
       "get": {
         "operationId": "Users_ListRoles",
@@ -483,21 +602,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "description": {
-                  "type": "string"
-                },
-                "scopes_permissions": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "array",
-                    "items": {
-                      "type": "object"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/UsersUpdateRoleBody"
             }
           }
         ],
@@ -687,34 +792,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "type": "string"
-                },
-                "enabled": {
-                  "type": "boolean"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "password": {
-                  "type": "string"
-                },
-                "pwdExpirationDate": {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                "pwdUpdateRequired": {
-                  "type": "boolean"
-                },
-                "roles": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
+              "$ref": "#/definitions/cephUsersUpdateUserBody"
             }
           }
         ],
@@ -753,15 +831,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "old_password": {
-                  "type": "string"
-                },
-                "new_password": {
-                  "type": "string"
-                }
-              }
+              "$ref": "#/definitions/UsersUserChangePasswordBody"
             }
           }
         ],
@@ -772,6 +842,34 @@
     }
   },
   "definitions": {
+    "UsersUpdateRoleBody": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "scopes_permissions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "UsersUserChangePasswordBody": {
+      "type": "object",
+      "properties": {
+        "old_password": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        }
+      }
+    },
     "cephClusterStatus": {
       "type": "object",
       "properties": {
@@ -841,6 +939,30 @@
         }
       }
     },
+    "cephCreateRuleRequest": {
+      "type": "object",
+      "properties": {
+        "deviceClass": {
+          "type": "string"
+        },
+        "failureDomain": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "poolType": {
+          "$ref": "#/definitions/cephPoolType"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "root": {
+          "type": "string"
+        }
+      },
+      "title": "CREATE RULE"
+    },
     "cephCreateUserReq": {
       "type": "object",
       "properties": {
@@ -895,6 +1017,19 @@
         }
       }
     },
+    "cephListRulesResponse": {
+      "type": "object",
+      "properties": {
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cephRule"
+          }
+        }
+      },
+      "title": "LIST RULES"
+    },
     "cephLoginReq": {
       "type": "object",
       "properties": {
@@ -936,6 +1071,14 @@
         }
       }
     },
+    "cephPoolType": {
+      "type": "string",
+      "enum": [
+        "replication",
+        "erasure"
+      ],
+      "default": "replication"
+    },
     "cephRole": {
       "type": "object",
       "properties": {
@@ -964,6 +1107,52 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/cephRole"
+          }
+        }
+      }
+    },
+    "cephRule": {
+      "type": "object",
+      "properties": {
+        "ruleId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ruleName": {
+          "type": "string"
+        },
+        "ruleset": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "type": "string",
+          "format": "int64"
+        },
+        "minSize": {
+          "type": "string",
+          "format": "int64"
+        },
+        "maxSize": {
+          "type": "string",
+          "format": "int64"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cephStep"
+          }
+        }
+      }
+    },
+    "cephStep": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
           }
         }
       }
@@ -1065,6 +1254,36 @@
         }
       }
     },
+    "cephUsersUpdateUserBody": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "pwdExpirationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "pwdUpdateRequired": {
+          "type": "boolean"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "googlerpcStatus": {
       "type": "object",
       "properties": {
@@ -1099,7 +1318,7 @@
         "NULL_VALUE"
       ],
       "default": "NULL_VALUE",
-      "description": "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\n The JSON representation for `NullValue` is JSON `null`.\n\n - NULL_VALUE: Null value."
+      "description": "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\nThe JSON representation for `NullValue` is JSON `null`.\n\n - NULL_VALUE: Null value."
     }
   },
   "securityDefinitions": {

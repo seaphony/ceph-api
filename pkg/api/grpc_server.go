@@ -31,6 +31,7 @@ func NewGrpcServer(conf Config,
 	clusterAPI pb.ClusterServer,
 	usersAPI pb.UsersServer,
 	authAPI pb.AuthServer,
+	crushRuleAPI pb.CrushRuleServer,
 	authN grpc_auth.AuthFunc,
 	tracer otel_trace.TracerProvider,
 	logConf log.Config) *grpc.Server {
@@ -73,6 +74,7 @@ func NewGrpcServer(conf Config,
 	pb.RegisterClusterServer(srv, clusterAPI)
 	pb.RegisterUsersServer(srv, usersAPI)
 	pb.RegisterAuthServer(srv, authAPI)
+	pb.RegisterCrushRuleServer(srv, crushRuleAPI)
 	if conf.GrpcReflection {
 		reflection.Register(srv)
 	}
