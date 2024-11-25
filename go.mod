@@ -1,4 +1,4 @@
-module github.com/seaphony/ceph-api
+module github.com/clyso/ceph-api
 
 go 1.21
 

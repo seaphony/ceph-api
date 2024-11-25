@@ -3,7 +3,7 @@ package trace
 import (
 	"net/http"
 
-	"github.com/seaphony/ceph-api/pkg/log"
+	"github.com/clyso/ceph-api/pkg/log"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/trace"
 )

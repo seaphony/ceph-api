@@ -3,8 +3,8 @@ package log
 import (
 	"context"
 
+	xctx "github.com/clyso/ceph-api/pkg/ctx"
 	"github.com/rs/zerolog"
-	xctx "github.com/seaphony/ceph-api/pkg/ctx"
 )
 
 func WithTraceID(ctx context.Context, t string) context.Context {

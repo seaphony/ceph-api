@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/clyso/ceph-api/pkg/types"
 	"github.com/rs/zerolog"
-	"github.com/seaphony/ceph-api/pkg/types"
 	"golang.org/x/sync/errgroup"
 )
 

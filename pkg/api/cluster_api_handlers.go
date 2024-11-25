@@ -10,11 +10,11 @@ import (
 	"strings"
 
 	gorados "github.com/ceph/go-ceph/rados"
+	pb "github.com/clyso/ceph-api/api/gen/grpc/go"
+	"github.com/clyso/ceph-api/pkg/rados"
+	"github.com/clyso/ceph-api/pkg/types"
+	"github.com/clyso/ceph-api/pkg/user"
 	"github.com/rs/zerolog"
-	pb "github.com/seaphony/ceph-api/api/gen/grpc/go"
-	"github.com/seaphony/ceph-api/pkg/rados"
-	"github.com/seaphony/ceph-api/pkg/types"
-	"github.com/seaphony/ceph-api/pkg/user"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 

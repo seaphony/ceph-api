@@ -6,12 +6,12 @@ import (
 	"crypto/rsa"
 	"time"
 
+	"github.com/clyso/ceph-api/pkg/user"
 	"github.com/ory/fosite"
 	"github.com/ory/fosite/compose"
 	"github.com/ory/fosite/handler/oauth2"
 	"github.com/ory/fosite/storage"
 	"github.com/ory/fosite/token/jwt"
-	"github.com/seaphony/ceph-api/pkg/user"
 	"golang.org/x/crypto/bcrypt"
 )
 

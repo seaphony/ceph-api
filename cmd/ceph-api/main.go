@@ -7,10 +7,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/clyso/ceph-api/pkg/app"
+	"github.com/clyso/ceph-api/pkg/config"
 	"github.com/rs/zerolog"
 	stdlog "github.com/rs/zerolog/log"
-	"github.com/seaphony/ceph-api/pkg/app"
-	"github.com/seaphony/ceph-api/pkg/config"
 )
 
 // this information will be collected when built, by -ldflags="-X 'main.version=$(tag)' -X 'main.commit=$(commit)'".

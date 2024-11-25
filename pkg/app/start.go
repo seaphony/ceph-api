@@ -6,16 +6,16 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/clyso/ceph-api/pkg/api"
+	"github.com/clyso/ceph-api/pkg/auth"
+	"github.com/clyso/ceph-api/pkg/config"
+	"github.com/clyso/ceph-api/pkg/log"
+	"github.com/clyso/ceph-api/pkg/rados"
+	"github.com/clyso/ceph-api/pkg/trace"
+	"github.com/clyso/ceph-api/pkg/types"
+	"github.com/clyso/ceph-api/pkg/user"
+	"github.com/clyso/ceph-api/pkg/util"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/seaphony/ceph-api/pkg/api"
-	"github.com/seaphony/ceph-api/pkg/auth"
-	"github.com/seaphony/ceph-api/pkg/config"
-	"github.com/seaphony/ceph-api/pkg/log"
-	"github.com/seaphony/ceph-api/pkg/rados"
-	"github.com/seaphony/ceph-api/pkg/trace"
-	"github.com/seaphony/ceph-api/pkg/types"
-	"github.com/seaphony/ceph-api/pkg/user"
-	"github.com/seaphony/ceph-api/pkg/util"
 )
 
 func Start(ctx context.Context, conf config.Config, build config.Build) error {

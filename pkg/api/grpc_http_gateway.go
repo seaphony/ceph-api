@@ -8,8 +8,8 @@ import (
 	"net/http/pprof"
 	"strconv"
 
+	pb "github.com/clyso/ceph-api/api/gen/grpc/go"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	pb "github.com/seaphony/ceph-api/api/gen/grpc/go"
 	"github.com/tmc/grpc-websocket-proxy/wsproxy"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"

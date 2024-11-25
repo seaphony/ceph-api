@@ -3,8 +3,8 @@ package trace
 import (
 	"context"
 
+	"github.com/clyso/ceph-api/pkg/log"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/seaphony/ceph-api/pkg/log"
 	oteltrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 )
