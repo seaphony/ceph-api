@@ -28,7 +28,7 @@ type crushDump struct {
 }
 
 func (c *crushRuleAPI) CreateRule(ctx context.Context, req *pb.CreateRuleRequest) (*emptypb.Empty, error) {
-	if err := user.HasPermissions(ctx, user.ScopeOsd, user.PermCreate); err != nil {
+	if err := user.HasPermissions(ctx, user.ScopePool, user.PermCreate); err != nil {
 		return nil, err
 	}
 
@@ -78,7 +78,7 @@ func (c *crushRuleAPI) CreateRule(ctx context.Context, req *pb.CreateRuleRequest
 }
 
 func (c *crushRuleAPI) DeleteRule(ctx context.Context, req *pb.DeleteRuleRequest) (*emptypb.Empty, error) {
-	if err := user.HasPermissions(ctx, user.ScopeOsd, user.PermDelete); err != nil {
+	if err := user.HasPermissions(ctx, user.ScopePool, user.PermDelete); err != nil {
 		return nil, err
 	}
 
@@ -102,7 +102,7 @@ func (c *crushRuleAPI) DeleteRule(ctx context.Context, req *pb.DeleteRuleRequest
 }
 
 func (c *crushRuleAPI) GetRule(ctx context.Context, req *pb.GetRuleRequest) (*pb.Rule, error) {
-	if err := user.HasPermissions(ctx, user.ScopeOsd, user.PermRead); err != nil {
+	if err := user.HasPermissions(ctx, user.ScopePool, user.PermRead); err != nil {
 		return nil, err
 	}
 	const cmdTempl = `{"prefix": "osd crush dump", "format": "json"}`
@@ -126,7 +126,7 @@ func (c *crushRuleAPI) GetRule(ctx context.Context, req *pb.GetRuleRequest) (*pb
 }
 
 func (c *crushRuleAPI) ListRules(ctx context.Context, req *emptypb.Empty) (*pb.ListRulesResponse, error) {
-	if err := user.HasPermissions(ctx, user.ScopeOsd, user.PermRead); err != nil {
+	if err := user.HasPermissions(ctx, user.ScopePool, user.PermRead); err != nil {
 		return nil, err
 	}
 	const cmdTempl = `{"prefix": "osd crush dump", "format": "json"}`
