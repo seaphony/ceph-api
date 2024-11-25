@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 
-option go_package = "github.com/seaphony/ceph-api/api/ceph;pb";
+option go_package = "github.com/clyso/ceph-api/api/ceph;pb";
 
 package ceph;
 

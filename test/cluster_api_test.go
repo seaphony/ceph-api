@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	pb "github.com/seaphony/ceph-api/api/gen/grpc/go"
+	pb "github.com/clyso/ceph-api/api/gen/grpc/go"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/emptypb"
 )

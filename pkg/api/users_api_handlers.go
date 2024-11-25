@@ -3,10 +3,10 @@ package api
 import (
 	"context"
 
-	pb "github.com/seaphony/ceph-api/api/gen/grpc/go"
-	xctx "github.com/seaphony/ceph-api/pkg/ctx"
-	"github.com/seaphony/ceph-api/pkg/types"
-	"github.com/seaphony/ceph-api/pkg/user"
+	pb "github.com/clyso/ceph-api/api/gen/grpc/go"
+	xctx "github.com/clyso/ceph-api/pkg/ctx"
+	"github.com/clyso/ceph-api/pkg/types"
+	"github.com/clyso/ceph-api/pkg/user"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"

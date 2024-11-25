@@ -5,11 +5,11 @@
     "version": "version not set",
     "contact": {
       "name": "Ceph API",
-      "url": "https://github.com/seaphony/ceph-api"
+      "url": "https://github.com/clyso/ceph-api"
     },
     "license": {
       "name": "GPL-3.0 license",
-      "url": "https://github.com/seaphony/ceph-api/blob/main/LICENSE"
+      "url": "https://github.com/clyso/ceph-api/blob/main/LICENSE"
     }
   },
   "tags": [

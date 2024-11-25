@@ -3,9 +3,9 @@ package api
 import (
 	"context"
 
-	pb "github.com/seaphony/ceph-api/api/gen/grpc/go"
-	"github.com/seaphony/ceph-api/pkg/auth"
-	"github.com/seaphony/ceph-api/pkg/types"
+	pb "github.com/clyso/ceph-api/api/gen/grpc/go"
+	"github.com/clyso/ceph-api/pkg/auth"
+	"github.com/clyso/ceph-api/pkg/types"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/structpb"
 )

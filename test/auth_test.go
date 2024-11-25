@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	pb "github.com/seaphony/ceph-api/api/gen/grpc/go"
+	pb "github.com/clyso/ceph-api/api/gen/grpc/go"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc/metadata"

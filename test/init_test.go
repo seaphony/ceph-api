@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	cephapi "github.com/seaphony/ceph-api"
-	"github.com/seaphony/ceph-api/pkg/app"
-	"github.com/seaphony/ceph-api/pkg/config"
+	cephapi "github.com/clyso/ceph-api"
+	"github.com/clyso/ceph-api/pkg/app"
+	"github.com/clyso/ceph-api/pkg/config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )

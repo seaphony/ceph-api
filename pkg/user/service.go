@@ -11,10 +11,10 @@ import (
 	"time"
 
 	goceph "github.com/ceph/go-ceph/rados"
+	xctx "github.com/clyso/ceph-api/pkg/ctx"
+	"github.com/clyso/ceph-api/pkg/rados"
+	"github.com/clyso/ceph-api/pkg/types"
 	"github.com/rs/zerolog"
-	xctx "github.com/seaphony/ceph-api/pkg/ctx"
-	"github.com/seaphony/ceph-api/pkg/rados"
-	"github.com/seaphony/ceph-api/pkg/types"
 	"golang.org/x/crypto/bcrypt"
 )
 

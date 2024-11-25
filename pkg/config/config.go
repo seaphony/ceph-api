@@ -7,12 +7,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/seaphony/ceph-api/pkg/api"
-	"github.com/seaphony/ceph-api/pkg/auth"
-	"github.com/seaphony/ceph-api/pkg/log"
-	"github.com/seaphony/ceph-api/pkg/metrics"
-	"github.com/seaphony/ceph-api/pkg/rados"
-	"github.com/seaphony/ceph-api/pkg/trace"
+	"github.com/clyso/ceph-api/pkg/api"
+	"github.com/clyso/ceph-api/pkg/auth"
+	"github.com/clyso/ceph-api/pkg/log"
+	"github.com/clyso/ceph-api/pkg/metrics"
+	"github.com/clyso/ceph-api/pkg/rados"
+	"github.com/clyso/ceph-api/pkg/trace"
 	"github.com/spf13/viper"
 )
 

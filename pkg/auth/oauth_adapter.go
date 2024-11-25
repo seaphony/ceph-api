@@ -9,9 +9,9 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/clyso/ceph-api/pkg/types"
+	"github.com/clyso/ceph-api/pkg/user"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
-	"github.com/seaphony/ceph-api/pkg/types"
-	"github.com/seaphony/ceph-api/pkg/user"
 )
 
 func (s *Server) Login(ctx context.Context, username, password string) (*LoginResp, error) {
