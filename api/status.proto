@@ -86,15 +86,7 @@ message CephStatusServiceMap {
 }
 
 message CephStatusService {
-  map<string, CephStatusDaemon> daemons = 1;
+  map<string, google.protobuf.Value> daemons = 1;
   string summary = 2;
 }
 
-message CephStatusDaemon {
-  int32 start_epoch = 1;
-  string start_stamp = 2;
-  int32 gid = 3;
-  string addr = 4;
-  map<string, string> metadata = 5;
-  map<string, google.protobuf.Struct> task_status = 6; // Allows dynamic fields.
-}

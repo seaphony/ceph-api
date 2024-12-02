@@ -896,38 +896,6 @@
         }
       }
     },
-    "cephCephStatusDaemon": {
-      "type": "object",
-      "properties": {
-        "startEpoch": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "startStamp": {
-          "type": "string"
-        },
-        "gid": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "addr": {
-          "type": "string"
-        },
-        "metadata": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "taskStatus": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "object"
-          },
-          "description": "Allows dynamic fields."
-        }
-      }
-    },
     "cephCephStatusFSMap": {
       "type": "object",
       "properties": {
@@ -1093,9 +1061,7 @@
       "properties": {
         "daemons": {
           "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/cephCephStatusDaemon"
-          }
+          "additionalProperties": {}
         },
         "summary": {
           "type": "string"
