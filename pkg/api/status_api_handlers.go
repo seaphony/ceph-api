@@ -25,7 +25,7 @@ func (s *statusAPI) GetCephStatus(ctx context.Context, body *emptypb.Empty) (*pb
 		return nil, err
 	}
 
-	const cmdTempl = `{"prefix": "osd status", "format": "json"}`
+	const cmdTempl = `{"prefix": "status", "format": "json"}`
 	res, err := s.radosSvc.ExecMon(ctx, cmdTempl)
 	if err != nil {
 		return nil, err
