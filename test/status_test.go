@@ -16,5 +16,8 @@ func Test_List_Ceph_Status(t *testing.T) {
 	r.NotEmpty(res)
 	r.NotEmpty(res.Fsid)
 	r.NotEmpty(res.QuorumAge)
-	// TODO: Add more checks here
+	r.NotEmpty(res.Health)
+	r.NotEmpty(res.Osdmap)
+	r.NotEmpty(res.Mgrmap)
+	r.NotEmpty(res.Monmap)
 }
