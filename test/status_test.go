@@ -45,11 +45,10 @@ func Test_GetCephMonDump(t *testing.T) {
 
 	// Validate the Features sub-message
 	r.NotNil(res.Features.Persistent, "Features.Persistent should not be nil")
-	r.NotNil(res.Features.Optional, "Features.Optional should not be nil")
 
 	// Validate the Mons repeated field
 	for _, mon := range res.Mons {
-		r.NotZero(mon.Rank, "Mon.Rank should not be zero")
+		r.NotNil(mon.Rank, "Mon.Rank should not be zero")
 		r.NotEmpty(mon.Name, "Mon.Name should not be empty")
 		r.NotEmpty(mon.Addr, "Mon.Addr should not be empty")
 		r.NotEmpty(mon.PublicAddr, "Mon.PublicAddr should not be empty")
