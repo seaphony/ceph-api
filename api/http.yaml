@@ -81,3 +81,6 @@ http:
     - selector: ceph.Status.GetCephStatus
       get: /api/status/ceph
       response_body: "*"
+    - selector: ceph.Status.GetCephMonDump
+      get: /api/status/mon_dump
+      response_body: "*"

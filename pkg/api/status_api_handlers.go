@@ -37,3 +37,21 @@ func (s *statusAPI) GetCephStatus(ctx context.Context, body *emptypb.Empty) (*pb
 
 	return &statusDump, nil
 }
+
+func (s *statusAPI) GetCephMonDump(ctx context.Context, req *emptypb.Empty) (*pb.CephMonDumpResponse, error) {
+	if err := user.HasPermissions(ctx, user.ScopeMonitor, user.PermRead); err != nil {
+		return nil, err
+	}
+
+	const cmdTempl = `{"prefix": "mon dump", "format": "json"}`
+	res, err := s.radosSvc.ExecMon(ctx, cmdTempl)
+	if err != nil {
+		return nil, err
+	}
+	var monDump pb.CephMonDumpResponse
+	if err := json.Unmarshal(res, &monDump); err != nil {
+		return nil, err
+	}
+
+	return &monDump, nil
+}
