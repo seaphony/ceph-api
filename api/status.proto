@@ -6,10 +6,13 @@ package ceph;
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
 
 service Status {
   // command: ceph status
   rpc GetCephStatus (google.protobuf.Empty) returns (GetCephStatusResponse) {}
+  // command: ceph mon dump
+  rpc GetCephMonDump (google.protobuf.Empty) returns (CephMonDumpResponse) {}
 }
 
 message GetCephStatusResponse {
@@ -27,6 +30,53 @@ message GetCephStatusResponse {
   CephStatusServiceMap servicemap = 12;
   google.protobuf.Struct progress_events = 13; 
 }
+
+message CephMonDumpResponse {
+  int32 epoch = 1;
+  string fsid = 2;
+  google.protobuf.Timestamp modified = 3;
+  google.protobuf.Timestamp created = 4;
+  int32 min_mon_release = 5;
+  string min_mon_release_name = 6;
+  int32 election_strategy = 7;
+  string disallowed_leaders = 8;
+  bool stretch_mode = 9;
+  string tiebreaker_mon = 10;
+  string removed_ranks = 11;
+  CephMonDumpFeatures features = 12;
+  repeated CephMonDumpMonInfo mons = 13;
+  repeated int32 quorum = 14;
+}
+
+
+message CephMonDumpFeatures {
+  repeated string persistent = 1;
+  repeated string optional = 2;
+}
+
+message CephMonDumpMonInfo {
+  int32 rank = 1;
+  string name = 2;
+
+  CephMonDumpAddrVec public_addrs = 3;
+
+  string addr = 4;
+  string public_addr = 5;
+  int32 priority = 6;
+  int32 weight = 7;
+  string crush_location = 8;
+}
+
+message CephMonDumpAddrVec {
+  repeated CephMonDumpAddress addrvec = 1;
+}
+
+message CephMonDumpAddress {
+  string type = 1;
+  string addr = 2;
+  int32 nonce = 3;
+}
+
 
 message CephStatusHealth {
   string status = 1;
