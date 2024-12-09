@@ -20,7 +20,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Status_GetCephStatus_FullMethodName = "/ceph.Status/GetCephStatus"
+	Status_GetCephStatus_FullMethodName  = "/ceph.Status/GetCephStatus"
+	Status_GetCephMonDump_FullMethodName = "/ceph.Status/GetCephMonDump"
 )
 
 // StatusClient is the client API for Status service.
@@ -29,6 +30,8 @@ const (
 type StatusClient interface {
 	// command: ceph status
 	GetCephStatus(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetCephStatusResponse, error)
+	// command: ceph mon dump
+	GetCephMonDump(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CephMonDumpResponse, error)
 }
 
 type statusClient struct {
@@ -49,12 +52,24 @@ func (c *statusClient) GetCephStatus(ctx context.Context, in *emptypb.Empty, opt
 	return out, nil
 }
 
+func (c *statusClient) GetCephMonDump(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CephMonDumpResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CephMonDumpResponse)
+	err := c.cc.Invoke(ctx, Status_GetCephMonDump_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StatusServer is the server API for Status service.
 // All implementations should embed UnimplementedStatusServer
 // for forward compatibility.
 type StatusServer interface {
 	// command: ceph status
 	GetCephStatus(context.Context, *emptypb.Empty) (*GetCephStatusResponse, error)
+	// command: ceph mon dump
+	GetCephMonDump(context.Context, *emptypb.Empty) (*CephMonDumpResponse, error)
 }
 
 // UnimplementedStatusServer should be embedded to have
@@ -66,6 +81,9 @@ type UnimplementedStatusServer struct{}
 
 func (UnimplementedStatusServer) GetCephStatus(context.Context, *emptypb.Empty) (*GetCephStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCephStatus not implemented")
+}
+func (UnimplementedStatusServer) GetCephMonDump(context.Context, *emptypb.Empty) (*CephMonDumpResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCephMonDump not implemented")
 }
 func (UnimplementedStatusServer) testEmbeddedByValue() {}
 
@@ -105,6 +123,24 @@ func _Status_GetCephStatus_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Status_GetCephMonDump_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StatusServer).GetCephMonDump(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Status_GetCephMonDump_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StatusServer).GetCephMonDump(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Status_ServiceDesc is the grpc.ServiceDesc for Status service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -115,6 +151,10 @@ var Status_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCephStatus",
 			Handler:    _Status_GetCephStatus_Handler,
+		},
+		{
+			MethodName: "GetCephMonDump",
+			Handler:    _Status_GetCephMonDump_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
