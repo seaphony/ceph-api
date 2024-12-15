@@ -69,3 +69,65 @@ func Test_GetCephMonDump(t *testing.T) {
 		}
 	}
 }
+
+func Test_GetCephOsdDump(t *testing.T) {
+	r := require.New(t)
+	client := pb.NewStatusClient(admConn)
+	res, err := client.GetCephOsdDump(tstCtx, &emptypb.Empty{})
+
+	r.NoError(err, "GetCephOsdDump should not return an error")
+	r.NotNil(res, "Response should not be nil")
+
+	// Top-level validations
+	r.NotEmpty(res.Epoch, "Epoch should not be empty")
+	r.NotEmpty(res.Fsid, "Fsid should not be empty")
+	r.NotNil(res.Created, "Created timestamp should not be nil")
+	r.NotNil(res.Modified, "Modified timestamp should not be nil")
+	r.NotNil(res.LastUpChange, "LastUpChange timestamp should not be nil")
+	r.NotNil(res.LastInChange, "LastInChange timestamp should not be nil")
+	r.NotEmpty(res.Flags, "Flags should not be empty")
+	r.NotZero(res.FlagsNum, "FlagsNum should not be zero")
+	r.NotEmpty(res.FlagsSet, "FlagsSet should not be empty")
+	r.NotZero(res.CrushVersion, "CrushVersion should not be zero")
+	r.NotZero(res.FullRatio, "FullRatio should not be zero")
+	r.NotZero(res.BackfillfullRatio, "BackfillfullRatio should not be zero")
+	r.NotZero(res.NearfullRatio, "NearfullRatio should not be zero")
+	r.NotEmpty(res.RequireMinCompatClient, "RequireMinCompatClient should not be empty")
+	r.NotEmpty(res.MinCompatClient, "MinCompatClient should not be empty")
+	r.NotEmpty(res.RequireOsdRelease, "RequireOsdRelease should not be empty")
+
+	// Timestamp checks
+	r.True(res.Created.AsTime().After(time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)),
+		"Created timestamp should be after 1 January 2024")
+	r.True(res.Created.AsTime().Before(time.Now()),
+		"Created timestamp should be before current time")
+
+	// modified >= created
+	r.True(!res.Modified.AsTime().Before(res.Created.AsTime()),
+		"Modified timestamp should be >= Created timestamp")
+
+	// Check the first pool as an example
+	if len(res.Pools) != 0 {
+		firstPool := res.Pools[0]
+		r.NotZero(firstPool.Pool, "Pool number should not be zero")
+		r.NotEmpty(firstPool.PoolName, "PoolName should not be empty")
+		r.NotNil(firstPool.CreateTime, "Pool CreateTime should not be nil")
+		r.NotEmpty(firstPool.FlagsNames, "Pool FlagsNames should not be empty")
+
+		r.True(firstPool.CreateTime.AsTime().After(time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)),
+			"Pool CreateTime should be after 1 Jan 2024")
+	}
+	// Check OSDs
+	for i, osd := range res.Osds {
+		r.NotEmpty(osd.Uuid, "uuid should not be empty at index %d", i)
+		r.NotEmpty(osd.State, "state array should not be empty at index %d", i)
+	}
+
+	// Check OSD XInfo
+	for i, xinfo := range res.OsdXinfo {
+		r.NotZero(xinfo.Osd, "xinfo.osd should not be zero at index %d", i)
+		r.NotNil(xinfo.DownStamp, "xinfo.down_stamp should not be nil at index %d", i)
+		r.NotZero(xinfo.Features, "xinfo.features should not be zero at index %d", i)
+	}
+	r.NotEmpty(res.ErasureCodeProfiles, "ErasureCodeProfiles should not be empty")
+}
