@@ -13,6 +13,8 @@ service Status {
   rpc GetCephStatus (google.protobuf.Empty) returns (GetCephStatusResponse) {}
   // command: ceph mon dump
   rpc GetCephMonDump (google.protobuf.Empty) returns (CephMonDumpResponse) {}
+  // command: ceph osd dump
+  rpc GetCephOsdDump (google.protobuf.Empty) returns (GetCephOsdDumpResponse) {}
 }
 
 message GetCephStatusResponse {
@@ -47,6 +49,7 @@ message CephMonDumpResponse {
   repeated CephMonDumpMonInfo mons = 13;
   repeated int32 quorum = 14;
 }
+
 
 
 message CephMonDumpFeatures {
@@ -140,3 +143,219 @@ message CephStatusService {
   string summary = 2;
 }
 
+
+// OSD DUMP
+
+message GetCephOsdDumpResponse {
+  int32 epoch = 1;
+  string fsid = 2;
+  google.protobuf.Timestamp created = 3;
+  google.protobuf.Timestamp modified = 4;
+  google.protobuf.Timestamp last_up_change = 5;
+  google.protobuf.Timestamp last_in_change = 6;
+  string flags = 7;
+  int32 flags_num = 8;
+  repeated string flags_set = 9;
+  int32 crush_version = 10;
+  double full_ratio = 11;
+  double backfillfull_ratio = 12;
+  double nearfull_ratio = 13;
+  string cluster_snapshot = 14;
+  int32 pool_max = 15;
+  int32 max_osd = 16;
+  string require_min_compat_client = 17;
+  string min_compat_client = 18;
+  string require_osd_release = 19;
+  bool allow_crimson = 20;
+
+  repeated OsdDumpPool pools = 21;
+
+  repeated OsdDumpOsdInfo osds = 22;           
+  repeated OsdDumpOsdXInfo osd_xinfo = 23;     
+
+  repeated google.protobuf.Value pg_upmap = 24;
+  repeated google.protobuf.Value pg_upmap_items = 25;
+  repeated google.protobuf.Value pg_upmap_primaries = 26;
+  repeated google.protobuf.Value pg_temp = 27;
+  repeated google.protobuf.Value primary_temp = 28;
+
+  map<string, google.protobuf.Timestamp> blocklist = 29;
+  google.protobuf.Struct range_blocklist = 30;
+
+  map<string, OsdDumpErasureCodeProfile> erasure_code_profiles = 31;
+
+  repeated google.protobuf.Value removed_snaps_queue = 32;
+  repeated google.protobuf.Value new_removed_snaps = 33;
+  repeated google.protobuf.Value new_purged_snaps = 34; 
+
+  google.protobuf.Struct crush_node_flags = 35;
+  google.protobuf.Struct device_class_flags = 36;
+
+  OsdDumpStretchMode stretch_mode = 37;
+}
+
+message OsdDumpPool {
+  int32 pool = 1;
+  string pool_name = 2;
+  google.protobuf.Timestamp create_time = 3; 
+  int64 flags = 4;
+  string flags_names = 5;
+  int32 type = 6;
+  int32 size = 7;
+  int32 min_size = 8;
+  int32 crush_rule = 9;
+
+  int32 peering_crush_bucket_count = 10;
+  int32 peering_crush_bucket_target = 11;
+  int32 peering_crush_bucket_barrier = 12;
+  int32 peering_crush_bucket_mandatory_member = 13;
+  int32 object_hash = 14;
+
+  string pg_autoscale_mode = 15;
+  int32 pg_num = 16;
+  int32 pg_placement_num = 17;
+  int32 pg_placement_num_target = 18;
+  int32 pg_num_target = 19;
+  int32 pg_num_pending = 20;
+
+  OsdDumpLastPgMergeMeta last_pg_merge_meta = 21;
+
+  string last_change = 22;
+  string last_force_op_resend = 23;
+  string last_force_op_resend_prenautilus = 24;
+  string last_force_op_resend_preluminous = 25;
+
+  uint64 auid = 26;
+  string snap_mode = 27;
+  uint64 snap_seq = 28;
+  uint64 snap_epoch = 29;
+
+  repeated google.protobuf.Value pool_snaps = 30;   
+  string removed_snaps = 31;           
+  uint64 quota_max_bytes = 32;
+  uint64 quota_max_objects = 33;
+  repeated int32 tiers = 34;
+  int32 tier_of = 35;
+  int32 read_tier = 36;
+  int32 write_tier = 37;
+  string cache_mode = 38;
+  uint64 target_max_bytes = 39;
+  uint64 target_max_objects = 40;
+  uint64 cache_target_dirty_ratio_micro = 41;
+  uint64 cache_target_dirty_high_ratio_micro = 42;
+  uint64 cache_target_full_ratio_micro = 43;
+  uint64 cache_min_flush_age = 44;
+  uint64 cache_min_evict_age = 45;
+  string erasure_code_profile = 46;
+
+  OsdDumpHitSetParams hit_set_params = 47;
+  uint64 hit_set_period = 48;
+  uint64 hit_set_count = 49;
+  bool use_gmt_hitset = 50;
+  uint64 min_read_recency_for_promote = 51;
+  uint64 min_write_recency_for_promote = 52;
+  uint64 hit_set_grade_decay_rate = 53;
+  uint64 hit_set_search_last_n = 54;
+  repeated google.protobuf.Value grade_table = 55;
+  uint64 stripe_width = 56;
+  uint64 expected_num_objects = 57;
+  bool fast_read = 58;
+
+  google.protobuf.Struct options = 59;
+  google.protobuf.Struct application_metadata = 60;
+
+  OsdDumpReadBalance read_balance = 61;
+}
+
+message OsdDumpLastPgMergeMeta {
+  string source_pgid = 1;
+  int32 ready_epoch = 2;
+  int32 last_epoch_started = 3;
+  int32 last_epoch_clean = 4;
+  string source_version = 5;
+  string target_version = 6;
+}
+
+message OsdDumpHitSetParams {
+  string type = 1;
+}
+
+message OsdDumpReadBalance {
+  double score_acting = 1;
+  double score_stable = 2;
+  double optimal_score = 3;
+  double raw_score_acting = 4;
+  double raw_score_stable = 5;
+  double primary_affinity_weighted = 6;
+  double average_primary_affinity = 7;
+  double average_primary_affinity_weighted = 8;
+}
+
+message OsdDumpOsdInfo {
+  int32 osd = 1;
+  string uuid = 2;
+  int32 up = 3;
+  int32 in = 4;
+  double weight = 5;
+  double primary_affinity = 6;
+  int32 last_clean_begin = 7;
+  int32 last_clean_end = 8;
+  int32 up_from = 9;
+  int32 up_thru = 10;
+  int32 down_at = 11;
+  int32 lost_at = 12;
+
+  OsdDumpPublicAddrs public_addrs = 13;
+  OsdDumpClusterAddrs cluster_addrs = 14;
+  OsdDumpHeartbeatAddrs heartbeat_back_addrs = 15;
+  OsdDumpHeartbeatAddrs heartbeat_front_addrs = 16;
+
+  string public_addr = 17;
+  string cluster_addr = 18;
+  string heartbeat_back_addr = 19;
+  string heartbeat_front_addr = 20;
+
+  repeated string state = 21;  
+}
+
+message OsdDumpPublicAddrs {
+  repeated OsdDumpAddrVec addrvec = 1;
+}
+message OsdDumpClusterAddrs {
+  repeated OsdDumpAddrVec addrvec = 1;
+}
+message OsdDumpHeartbeatAddrs {
+  repeated OsdDumpAddrVec addrvec = 1;
+}
+
+message OsdDumpAddrVec {
+  string type = 1;
+  string addr = 2;
+  uint64 nonce = 3;
+}
+
+message OsdDumpOsdXInfo {
+  int32 osd = 1;
+  google.protobuf.Timestamp down_stamp = 2;
+  double laggy_probability = 3;
+  double laggy_interval = 4;
+  uint64 features = 5;
+  double old_weight = 6;
+  google.protobuf.Timestamp last_purged_snaps_scrub = 7;
+  int32 dead_epoch = 8;
+}
+
+message OsdDumpErasureCodeProfile {
+  string k = 1;
+  string m = 2;
+  string plugin = 3;
+  string technique = 4;
+}
+
+message OsdDumpStretchMode {
+  bool stretch_mode_enabled = 1;
+  int32 stretch_bucket_count = 2;
+  int32 degraded_stretch_mode = 3;
+  int32 recovering_stretch_mode = 4;
+  int32 stretch_mode_bucket = 5;
+}

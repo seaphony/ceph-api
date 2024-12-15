@@ -660,6 +660,29 @@
         ]
       }
     },
+    "/api/status/osd_dump": {
+      "get": {
+        "summary": "command: ceph osd dump",
+        "operationId": "Status_GetCephOsdDump",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cephGetCephOsdDumpResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Status"
+        ]
+      }
+    },
     "/api/user": {
       "get": {
         "operationId": "Users_ListUsers",
@@ -1392,6 +1415,164 @@
         }
       }
     },
+    "cephGetCephOsdDumpResponse": {
+      "type": "object",
+      "properties": {
+        "epoch": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "fsid": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "modified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastUpChange": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastInChange": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "flags": {
+          "type": "string"
+        },
+        "flagsNum": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "flagsSet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "crushVersion": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "fullRatio": {
+          "type": "number",
+          "format": "double"
+        },
+        "backfillfullRatio": {
+          "type": "number",
+          "format": "double"
+        },
+        "nearfullRatio": {
+          "type": "number",
+          "format": "double"
+        },
+        "clusterSnapshot": {
+          "type": "string"
+        },
+        "poolMax": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxOsd": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "requireMinCompatClient": {
+          "type": "string"
+        },
+        "minCompatClient": {
+          "type": "string"
+        },
+        "requireOsdRelease": {
+          "type": "string"
+        },
+        "allowCrimson": {
+          "type": "boolean"
+        },
+        "pools": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cephOsdDumpPool"
+          }
+        },
+        "osds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cephOsdDumpOsdInfo"
+          }
+        },
+        "osdXinfo": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cephOsdDumpOsdXInfo"
+          }
+        },
+        "pgUpmap": {
+          "type": "array",
+          "items": {}
+        },
+        "pgUpmapItems": {
+          "type": "array",
+          "items": {}
+        },
+        "pgUpmapPrimaries": {
+          "type": "array",
+          "items": {}
+        },
+        "pgTemp": {
+          "type": "array",
+          "items": {}
+        },
+        "primaryTemp": {
+          "type": "array",
+          "items": {}
+        },
+        "blocklist": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "rangeBlocklist": {
+          "type": "object"
+        },
+        "erasureCodeProfiles": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/cephOsdDumpErasureCodeProfile"
+          }
+        },
+        "removedSnapsQueue": {
+          "type": "array",
+          "items": {}
+        },
+        "newRemovedSnaps": {
+          "type": "array",
+          "items": {}
+        },
+        "newPurgedSnaps": {
+          "type": "array",
+          "items": {}
+        },
+        "crushNodeFlags": {
+          "type": "object"
+        },
+        "deviceClassFlags": {
+          "type": "object"
+        },
+        "stretchMode": {
+          "$ref": "#/definitions/cephOsdDumpStretchMode"
+        }
+      }
+    },
     "cephGetCephStatusResponse": {
       "type": "object",
       "properties": {
@@ -1496,6 +1677,522 @@
               "type": "object"
             }
           }
+        }
+      }
+    },
+    "cephOsdDumpAddrVec": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "addr": {
+          "type": "string"
+        },
+        "nonce": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "cephOsdDumpClusterAddrs": {
+      "type": "object",
+      "properties": {
+        "addrvec": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cephOsdDumpAddrVec"
+          }
+        }
+      }
+    },
+    "cephOsdDumpErasureCodeProfile": {
+      "type": "object",
+      "properties": {
+        "k": {
+          "type": "string"
+        },
+        "m": {
+          "type": "string"
+        },
+        "plugin": {
+          "type": "string"
+        },
+        "technique": {
+          "type": "string"
+        }
+      }
+    },
+    "cephOsdDumpHeartbeatAddrs": {
+      "type": "object",
+      "properties": {
+        "addrvec": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cephOsdDumpAddrVec"
+          }
+        }
+      }
+    },
+    "cephOsdDumpHitSetParams": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "cephOsdDumpLastPgMergeMeta": {
+      "type": "object",
+      "properties": {
+        "sourcePgid": {
+          "type": "string"
+        },
+        "readyEpoch": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lastEpochStarted": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lastEpochClean": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sourceVersion": {
+          "type": "string"
+        },
+        "targetVersion": {
+          "type": "string"
+        }
+      }
+    },
+    "cephOsdDumpOsdInfo": {
+      "type": "object",
+      "properties": {
+        "osd": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "uuid": {
+          "type": "string"
+        },
+        "up": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "in": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "weight": {
+          "type": "number",
+          "format": "double"
+        },
+        "primaryAffinity": {
+          "type": "number",
+          "format": "double"
+        },
+        "lastCleanBegin": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lastCleanEnd": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "upFrom": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "upThru": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "downAt": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lostAt": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "publicAddrs": {
+          "$ref": "#/definitions/cephOsdDumpPublicAddrs"
+        },
+        "clusterAddrs": {
+          "$ref": "#/definitions/cephOsdDumpClusterAddrs"
+        },
+        "heartbeatBackAddrs": {
+          "$ref": "#/definitions/cephOsdDumpHeartbeatAddrs"
+        },
+        "heartbeatFrontAddrs": {
+          "$ref": "#/definitions/cephOsdDumpHeartbeatAddrs"
+        },
+        "publicAddr": {
+          "type": "string"
+        },
+        "clusterAddr": {
+          "type": "string"
+        },
+        "heartbeatBackAddr": {
+          "type": "string"
+        },
+        "heartbeatFrontAddr": {
+          "type": "string"
+        },
+        "state": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "cephOsdDumpOsdXInfo": {
+      "type": "object",
+      "properties": {
+        "osd": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "downStamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "laggyProbability": {
+          "type": "number",
+          "format": "double"
+        },
+        "laggyInterval": {
+          "type": "number",
+          "format": "double"
+        },
+        "features": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "oldWeight": {
+          "type": "number",
+          "format": "double"
+        },
+        "lastPurgedSnapsScrub": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deadEpoch": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "cephOsdDumpPool": {
+      "type": "object",
+      "properties": {
+        "pool": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "poolName": {
+          "type": "string"
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "flags": {
+          "type": "string",
+          "format": "int64"
+        },
+        "flagsNames": {
+          "type": "string"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "size": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "crushRule": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "peeringCrushBucketCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "peeringCrushBucketTarget": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "peeringCrushBucketBarrier": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "peeringCrushBucketMandatoryMember": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "objectHash": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pgAutoscaleMode": {
+          "type": "string"
+        },
+        "pgNum": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pgPlacementNum": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pgPlacementNumTarget": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pgNumTarget": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pgNumPending": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lastPgMergeMeta": {
+          "$ref": "#/definitions/cephOsdDumpLastPgMergeMeta"
+        },
+        "lastChange": {
+          "type": "string"
+        },
+        "lastForceOpResend": {
+          "type": "string"
+        },
+        "lastForceOpResendPrenautilus": {
+          "type": "string"
+        },
+        "lastForceOpResendPreluminous": {
+          "type": "string"
+        },
+        "auid": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "snapMode": {
+          "type": "string"
+        },
+        "snapSeq": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "snapEpoch": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "poolSnaps": {
+          "type": "array",
+          "items": {}
+        },
+        "removedSnaps": {
+          "type": "string"
+        },
+        "quotaMaxBytes": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "quotaMaxObjects": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "tiers": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "tierOf": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "readTier": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "writeTier": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cacheMode": {
+          "type": "string"
+        },
+        "targetMaxBytes": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "targetMaxObjects": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "cacheTargetDirtyRatioMicro": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "cacheTargetDirtyHighRatioMicro": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "cacheTargetFullRatioMicro": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "cacheMinFlushAge": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "cacheMinEvictAge": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "erasureCodeProfile": {
+          "type": "string"
+        },
+        "hitSetParams": {
+          "$ref": "#/definitions/cephOsdDumpHitSetParams"
+        },
+        "hitSetPeriod": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "hitSetCount": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "useGmtHitset": {
+          "type": "boolean"
+        },
+        "minReadRecencyForPromote": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "minWriteRecencyForPromote": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "hitSetGradeDecayRate": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "hitSetSearchLastN": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "gradeTable": {
+          "type": "array",
+          "items": {}
+        },
+        "stripeWidth": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "expectedNumObjects": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "fastRead": {
+          "type": "boolean"
+        },
+        "options": {
+          "type": "object"
+        },
+        "applicationMetadata": {
+          "type": "object"
+        },
+        "readBalance": {
+          "$ref": "#/definitions/cephOsdDumpReadBalance"
+        }
+      }
+    },
+    "cephOsdDumpPublicAddrs": {
+      "type": "object",
+      "properties": {
+        "addrvec": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cephOsdDumpAddrVec"
+          }
+        }
+      }
+    },
+    "cephOsdDumpReadBalance": {
+      "type": "object",
+      "properties": {
+        "scoreActing": {
+          "type": "number",
+          "format": "double"
+        },
+        "scoreStable": {
+          "type": "number",
+          "format": "double"
+        },
+        "optimalScore": {
+          "type": "number",
+          "format": "double"
+        },
+        "rawScoreActing": {
+          "type": "number",
+          "format": "double"
+        },
+        "rawScoreStable": {
+          "type": "number",
+          "format": "double"
+        },
+        "primaryAffinityWeighted": {
+          "type": "number",
+          "format": "double"
+        },
+        "averagePrimaryAffinity": {
+          "type": "number",
+          "format": "double"
+        },
+        "averagePrimaryAffinityWeighted": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "cephOsdDumpStretchMode": {
+      "type": "object",
+      "properties": {
+        "stretchModeEnabled": {
+          "type": "boolean"
+        },
+        "stretchBucketCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "degradedStretchMode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "recoveringStretchMode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "stretchModeBucket": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
