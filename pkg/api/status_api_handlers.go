@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"time"
 
 	pb "github.com/clyso/ceph-api/api/gen/grpc/go"
 	"github.com/clyso/ceph-api/pkg/rados"
@@ -79,7 +78,7 @@ func (s *statusAPI) GetCephMonDump(ctx context.Context, req *emptypb.Empty) (*pb
 }
 
 func (s *statusAPI) GetCephOsdDump(ctx context.Context, body *emptypb.Empty) (*pb.GetCephOsdDumpResponse, error) {
-	if err := user.HasPermissions(ctx, user.ScopeMonitor, user.PermRead); err != nil {
+	if err := user.HasPermissions(ctx, user.ScopeOsd, user.PermRead); err != nil {
 		return nil, err
 	}
 
@@ -94,44 +93,19 @@ func (s *statusAPI) GetCephOsdDump(ctx context.Context, body *emptypb.Empty) (*p
 		return nil, err
 	}
 
-	modifiedGoParsedTimestamp, err := parseCustomTimestamp(osdDump.Modified)
-	if err != nil {
-		return nil, err
-	}
-	modifiedTimestamp := timestamppb.New(modifiedGoParsedTimestamp)
+	response := convertToPbGetCephOsdDumpResponse(osdDump)
 
-	createdGoParsedTimestamp, err := parseCustomTimestamp(osdDump.Created)
-	if err != nil {
-		return nil, err
-	}
-	createdTimestamp := timestamppb.New(createdGoParsedTimestamp)
+	return response, nil
+}
 
-	lastUpChangeGoParsedTimestamp, err := parseCustomTimestamp(osdDump.LastUpChange)
-	if err != nil {
-		return nil, err
-	}
-	lastUpChange := timestamppb.New(lastUpChangeGoParsedTimestamp)
-
-	lastInChangeGoParsedTimestamp, err := parseCustomTimestamp(osdDump.LastInChange)
-	if err != nil {
-		return nil, err
-	}
-	lastInChange := timestamppb.New(lastInChangeGoParsedTimestamp)
-
+func convertToPbGetCephOsdDumpResponse(osdDump types.CephOsdDumpResponse) *pb.GetCephOsdDumpResponse {
 	// Convert pools
 	var osdDumpPools []*pb.OsdDumpPool
 	for _, pool := range osdDump.Pools {
-		createTimePbGoParsed, err := parseCustomTimestamp(pool.CreateTime)
-		if err != nil {
-			return nil, err
-		}
-
-		createTimePb := timestamppb.New(createTimePbGoParsed)
-
 		osdDumpPools = append(osdDumpPools, &pb.OsdDumpPool{
 			Pool:                              pool.Pool,
 			PoolName:                          pool.PoolName,
-			CreateTime:                        createTimePb,
+			CreateTime:                        pool.CreateTime.Timestamp,
 			Flags:                             pool.Flags,
 			FlagsNames:                        pool.FlagsNames,
 			Type:                              pool.Type,
@@ -195,42 +169,30 @@ func (s *statusAPI) GetCephOsdDump(ctx context.Context, body *emptypb.Empty) (*p
 
 	blocklistPb := make(map[string]*timestamppb.Timestamp, len(osdDump.Blocklist))
 	for ip, t := range osdDump.Blocklist {
-		goParsedTime, err := parseCustomTimestamp(t)
-		if err != nil {
-			return nil, err
-		}
-		blocklistPb[ip] = timestamppb.New(goParsedTime)
+		blocklistPb[ip] = t.Timestamp
 	}
 
 	var osdXInfo []*pb.OsdDumpOsdXInfo
 	for _, osdX := range osdDump.OsdXinfo {
-		downStamp, err := parseCustomTimestamp(osdX.DownStamp)
-		if err != nil {
-			return nil, err
-		}
-		lastPurgedSnapsScrub, err := parseCustomTimestamp(osdX.LastPurgedSnapsScrub)
-		if err != nil {
-			return nil, err
-		}
 		osdXInfo = append(osdXInfo, &pb.OsdDumpOsdXInfo{
 			Osd:                  osdX.Osd,
-			DownStamp:            timestamppb.New(downStamp),
+			DownStamp:            osdX.DownStamp.Timestamp,
 			LaggyProbability:     osdX.LaggyProbability,
 			LaggyInterval:        osdX.LaggyInterval,
 			Features:             osdX.Features,
 			OldWeight:            osdX.OldWeight,
-			LastPurgedSnapsScrub: timestamppb.New(lastPurgedSnapsScrub),
+			LastPurgedSnapsScrub: osdX.LastPurgedSnapsScrub.Timestamp,
 			DeadEpoch:            osdX.DeadEpoch,
 		})
 	}
 
-	response := pb.GetCephOsdDumpResponse{
+	return &pb.GetCephOsdDumpResponse{
 		Epoch:                  osdDump.Epoch,
 		Fsid:                   osdDump.Fsid,
-		Modified:               modifiedTimestamp,
-		Created:                createdTimestamp,
-		LastUpChange:           lastUpChange,
-		LastInChange:           lastInChange,
+		Modified:               osdDump.Modified.Timestamp,
+		Created:                osdDump.Created.Timestamp,
+		LastUpChange:           osdDump.LastUpChange.Timestamp,
+		LastInChange:           osdDump.LastInChange.Timestamp,
 		Flags:                  osdDump.Flags,
 		FlagsNum:               osdDump.FlagsNum,
 		FlagsSet:               osdDump.FlagsSet,
@@ -268,15 +230,4 @@ func (s *statusAPI) GetCephOsdDump(ctx context.Context, body *emptypb.Empty) (*p
 		DeviceClassFlags: osdDump.DeviceClassFlags,
 		StretchMode:      osdDump.StretchMode,
 	}
-
-	return &response, nil
-}
-
-func parseCustomTimestamp(timestamp string) (time.Time, error) {
-	const customTimeLayout = "2006-01-02T15:04:05.000000-0700"
-	if timestamp == "0.000000" || timestamp == "" {
-		// Return the zero time for Go, indicating an unset or invalid time.
-		return time.Time{}, nil
-	}
-	return time.Parse(customTimeLayout, timestamp)
 }

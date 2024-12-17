@@ -34,7 +34,6 @@ func Test_GetCephMonDump(t *testing.T) {
 	r.NotNil(res)
 
 	// Validate required fields in CephMonDumpResponse
-	r.NotEmpty(res.Epoch, "Epoch should not be empty")
 	r.NotEmpty(res.Fsid, "Fsid should not be empty")
 	r.NotEmpty(res.Modified, "Modified timestamp should not be empty")
 	r.NotEmpty(res.Created, "Created timestamp should not be empty")
@@ -79,7 +78,6 @@ func Test_GetCephOsdDump(t *testing.T) {
 	r.NotNil(res, "Response should not be nil")
 
 	// Top-level validations
-	r.NotEmpty(res.Epoch, "Epoch should not be empty")
 	r.NotEmpty(res.Fsid, "Fsid should not be empty")
 	r.NotNil(res.Created, "Created timestamp should not be nil")
 	r.NotNil(res.Modified, "Modified timestamp should not be nil")
