@@ -1,10 +1,12 @@
 package types
 
 import (
+	"strings"
 	"time"
 
 	pb "github.com/clyso/ceph-api/api/gen/grpc/go"
 	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type CephMonDumpResponse struct {
@@ -27,10 +29,10 @@ type CephMonDumpResponse struct {
 type CephOsdDumpResponse struct {
 	Epoch                  int32                                    `json:"epoch,omitempty"`
 	Fsid                   string                                   `json:"fsid"`
-	Created                string                                   `json:"created"`
-	Modified               string                                   `json:"modified,omitempty"`
-	LastUpChange           string                                   `json:"last_up_change,omitempty"`
-	LastInChange           string                                   `json:"last_in_change,omitempty"`
+	Created                CephTimestamp                            `json:"created"`
+	Modified               CephTimestamp                            `json:"modified,omitempty"`
+	LastUpChange           CephTimestamp                            `json:"last_up_change,omitempty"`
+	LastInChange           CephTimestamp                            `json:"last_in_change,omitempty"`
 	Flags                  string                                   `json:"flags,omitempty"`
 	FlagsNum               int32                                    `json:"flags_num,omitempty"`
 	FlagsSet               []string                                 `json:"flags_set,omitempty"`
@@ -53,7 +55,7 @@ type CephOsdDumpResponse struct {
 	PgUpmapPrimaries       []*structpb.Value                        `json:"pg_upmap_primaries,omitempty"`
 	PgTemp                 []*structpb.Value                        `json:"pg_temp,omitempty"`
 	PrimaryTemp            []*structpb.Value                        `json:"primary_temp,omitempty"`
-	Blocklist              map[string]string                        `json:"blocklist,omitempty"`
+	Blocklist              map[string]CephTimestamp                 `json:"blocklist,omitempty"`
 	RangeBlocklist         *structpb.Struct                         `json:"range_blocklist,omitempty"`
 	ErasureCodeProfiles    map[string]*pb.OsdDumpErasureCodeProfile `json:"erasure_code_profiles,omitempty"`
 	RemovedSnapsQueue      []*structpb.Value                        `json:"removed_snaps_queue,omitempty"`
@@ -67,7 +69,7 @@ type CephOsdDumpResponse struct {
 type OsdDumpPool struct {
 	Pool                              int32                      `json:"pool,omitempty"`
 	PoolName                          string                     `json:"pool_name,omitempty"`
-	CreateTime                        string                     `json:"create_time"`
+	CreateTime                        CephTimestamp              `json:"create_time"`
 	Flags                             int64                      `json:"flags,omitempty"`
 	FlagsNames                        string                     `json:"flags_names,omitempty"`
 	Type                              int32                      `json:"type,omitempty"`
@@ -129,12 +131,39 @@ type OsdDumpPool struct {
 }
 
 type OsdDumpOsdXInfo struct {
-	Osd                  int32   `json:"osd,omitempty"`
-	DownStamp            string  `json:"down_stamp,omitempty"`
-	LaggyProbability     float64 `json:"laggy_probability,omitempty"`
-	LaggyInterval        float64 `json:"laggy_interval,omitempty"`
-	Features             uint64  `json:"features,omitempty"`
-	OldWeight            float64 `json:"old_weight,omitempty"`
-	LastPurgedSnapsScrub string  `json:"last_purged_snaps_scrub,omitempty"`
-	DeadEpoch            int32   `json:"dead_epoch,omitempty"`
+	Osd                  int32         `json:"osd,omitempty"`
+	DownStamp            CephTimestamp `json:"down_stamp,omitempty"`
+	LaggyProbability     float64       `json:"laggy_probability,omitempty"`
+	LaggyInterval        float64       `json:"laggy_interval,omitempty"`
+	Features             uint64        `json:"features,omitempty"`
+	OldWeight            float64       `json:"old_weight,omitempty"`
+	LastPurgedSnapsScrub CephTimestamp `json:"last_purged_snaps_scrub,omitempty"`
+	DeadEpoch            int32         `json:"dead_epoch,omitempty"`
+}
+
+type CephTimestamp struct {
+	*timestamppb.Timestamp
+}
+
+const customTimeLayout = "2006-01-02T15:04:05.000000-0700"
+
+// custom unmashal function for CephTimestamp
+func (ct *CephTimestamp) UnmarshalJSON(data []byte) error {
+	// data is a JSON string (e.g., "\"2023-05-01T12:34:56.000000-0700\"")
+
+	// First, trim surrounding quotes.
+	s := strings.Trim(string(data), `"`)
+
+	// Handle the "0.000000" or empty-string case
+	if s == "0.000000" || s == "" {
+		ct.Timestamp = timestamppb.New(time.Time{})
+		return nil
+	}
+
+	parsed, err := time.Parse(customTimeLayout, s)
+	if err != nil {
+		return err
+	}
+	ct.Timestamp = timestamppb.New(parsed)
+	return nil
 }
